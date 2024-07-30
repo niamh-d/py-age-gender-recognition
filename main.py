@@ -1,8 +1,8 @@
 import cv2
 
-# Read Image and resize
-img = cv2.imread("imgs/woman_2.jpg")
-image = cv2.resize(img, (720, 640))
+# Read Image
+image = cv2.imread("imgs/woman_3.png")
+img = cv2.resize(image, (640, 720))
 
 # define models
 face_pbtxt = "models/opencv_face_detector.pbtxt"
@@ -31,8 +31,10 @@ age_classifications = [
 ]
 gender_classifications = ["Male", "Female"]
 
+PADDING = 15
+
 # Copy img
-img_cp = image.copy()
+img_cp = img.copy()
 
 # Get image dimensions and blob
 img_h = img_cp.shape[0]
@@ -48,7 +50,7 @@ face_bounds = []
 
 for i in range(detected_faces.shape[2]):
     confidence = detected_faces[0, 0, i, 2]
-    if confidence > 0.88:
+    if confidence > 0.91:
         x1 = int(detected_faces[0, 0, i, 3] * img_w)
         y1 = int(detected_faces[0, 0, i, 4] * img_h)
         x2 = int(detected_faces[0, 0, i, 5] * img_w)
@@ -65,12 +67,14 @@ if not face_bounds:
 for face_bound in face_bounds:
     try:
         face = img_cp[
-            max(0, face_bound[1] - 15) : min(face_bound[3] + 15, img_cp.shape[0] - 1),
-            max(0, face_bound[0] - 15) : min(face_bound[2] + 15, img_cp.shape[1] - 1),
+            max(0, face_bound[1] - PADDING) : min(
+                face_bound[3] + PADDING, img_cp.shape[0] - 1
+            ),
+            max(0, face_bound[0] - PADDING) : min(
+                face_bound[2] + PADDING, img_cp.shape[1] - 1
+            ),
         ]
-        blob = cv2.dnn.blobFromImage(
-            face, 1.0, (227, 227), MODEL_MEAN_VALUES, swapRB=False
-        )
+        blob = cv2.dnn.blobFromImage(face, 1.0, (227, 227), MODEL_MEAN_VALUES, True)
 
         gender.setInput(blob)
         gender_prediction = gender.forward()
@@ -83,7 +87,7 @@ for face_bound in face_bounds:
         cv2.putText(
             img_cp,
             f"{gender_str} {age_str}",
-            (face_bound[0], face_bound[1] - 12),
+            (face_bound[0], face_bound[1] - PADDING),
             cv2.FONT_HERSHEY_SIMPLEX,
             0.8,
             (0, 0, 255),
