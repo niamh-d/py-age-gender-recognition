@@ -45,6 +45,7 @@ for i in range(detected_faces.shape[2]):
         y1 = int(detected_faces[0, 0, i, 5] * img_h)
         y2 = int(detected_faces[0, 0, i, 6] * img_h)
         cv2.rectangle(img_cp, (x1, x2), (y1, y2), (0, 255, 0), int(round(img_h/150)), 8)
+        face_bounds.append([x1, x2, y1, y2])
 
 
 cv2.imshow('Result', img_cp)
