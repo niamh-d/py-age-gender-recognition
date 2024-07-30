@@ -58,6 +58,10 @@ for i in range(detected_faces.shape[2]):
         )
         face_bounds.append([x1, y1, x2, y2])
 
+if not face_bounds:
+    print("No faces detected")
+    exit()
+
 for face_bound in face_bounds:
     try:
         face = img_cp[
