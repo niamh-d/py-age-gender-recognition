@@ -1,8 +1,8 @@
 import cv2
 
-#Read Image
-img = cv2.imread('imgs/woman_1.jpg')
-image = cv2.resize(img, (720, 640))
+#Read Image and resize
+img = cv2.imread('imgs/man_1.jpg')
+image = cv2.resize(img, (640, 720))
 
 #define models
 face_pbtxt = "models/opencv_face_detector.pbtxt"
