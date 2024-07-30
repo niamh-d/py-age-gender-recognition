@@ -1,7 +1,7 @@
 import cv2
 
 # Read Image
-image = cv2.imread("imgs/woman_3.png")
+image = cv2.imread("imgs/group_2.png")
 img = cv2.resize(image, (640, 720))
 
 # define models
@@ -50,7 +50,7 @@ face_bounds = []
 
 for i in range(detected_faces.shape[2]):
     confidence = detected_faces[0, 0, i, 2]
-    if confidence > 0.91:
+    if confidence > 0.6:
         x1 = int(detected_faces[0, 0, i, 3] * img_w)
         y1 = int(detected_faces[0, 0, i, 4] * img_h)
         x2 = int(detected_faces[0, 0, i, 5] * img_w)
