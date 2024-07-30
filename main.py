@@ -1,7 +1,7 @@
 import cv2
 
 # Read Image and resize
-img = cv2.imread("imgs/man_1.jpg")
+img = cv2.imread("imgs/girl_1.jpg")
 image = cv2.resize(img, (640, 720))
 
 # define models
@@ -20,18 +20,14 @@ gender = cv2.dnn.readNet(gender_model, gender_prototxt)
 
 # setup classifications
 age_classifications = [
-    "0-2",
-    "3-6",
-    "7-12",
-    "13-17",
-    "18-24",
-    "25-34",
-    "35-44",
-    "45-54",
-    "55-64",
-    "65-74",
-    "75-84",
-    "85+",
+    "(0-2 yrs)",
+    "(4-6 yrs)",
+    "(8-12 yrs)",
+    "(15-20 yrs)",
+    "(25-32 yrs)",
+    "(35-43 yrs)",
+    "(48-53 yrs)",
+    "(60+ yrs)",
 ]
 gender_classifications = ["Male", "Female"]
 
@@ -69,9 +65,25 @@ for face_bound in face_bounds:
             max(0, face_bound[0] - 15) : min(face_bound[2] + 15, img_cp.shape[1] - 1),
         ]
         blob = cv2.dnn.blobFromImage(face, 1.0, (227, 227), MODEL_MEAN_VALUES, True)
+
         gender.setInput(blob)
         gender_prediction = gender.forward()
-        print(gender_prediction)
+        gender_str = gender_classifications[gender_prediction[0].argmax()]
+
+        age.setInput(blob)
+        age_prediction = age.forward()
+        age_str = age_classifications[age_prediction[0].argmax()]
+
+        cv2.putText(
+            img_cp,
+            f"{gender_str} {age_str}",
+            (face_bound[0], face_bound[1] - 15),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            1,
+            (0, 0, 255),
+            2,
+            cv2.LINE_AA,
+        )
 
     except Exception as e:
         print(e)
