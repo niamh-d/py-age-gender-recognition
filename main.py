@@ -64,11 +64,11 @@ for i in range(detected_faces.shape[2]):
 
 for face_bound in face_bounds:
     try:
-        face = img.cp[
+        face = img_cp[
             max(0, face_bound[1] - 15) : min(face_bound[3] + 15, img_cp.shape[0] - 1),
             max(0, face_bound[0] - 15) : min(face_bound[2] + 15, img_cp.shape[1] - 1),
         ]
-        blob = cv2.dnn.blobFromImage(face, 1.0, (277, 277), MODEL_MEAN_VALUES, True)
+        blob = cv2.dnn.blobFromImage(face, 1.0, (227, 227), MODEL_MEAN_VALUES, True)
         gender.setInput(blob)
         gender_prediction = gender.forward()
         print(gender_prediction)
