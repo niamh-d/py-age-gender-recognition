@@ -1,8 +1,8 @@
 import cv2
 
 # Read Image and resize
-img = cv2.imread("imgs/girl_1.jpg")
-image = cv2.resize(img, (640, 720))
+img = cv2.imread("imgs/woman_2.jpg")
+image = cv2.resize(img, (720, 640))
 
 # define models
 face_pbtxt = "models/opencv_face_detector.pbtxt"
@@ -11,7 +11,7 @@ age_prototxt = "models/age_deploy.prototxt"
 age_model = "models/age_net.caffemodel"
 gender_prototxt = "models/gender_deploy.prototxt"
 gender_model = "models/gender_net.caffemodel"
-MODEL_MEAN_VALUES = [104, 177, 123]
+MODEL_MEAN_VALUES = (78.4263377603, 87.7689143744, 114.895847746)
 
 # load models
 face = cv2.dnn.readNet(face_pb, face_pbtxt)
@@ -25,7 +25,7 @@ age_classifications = [
     "(8-12 yrs)",
     "(15-20 yrs)",
     "(25-32 yrs)",
-    "(35-43 yrs)",
+    "(38-43 yrs)",
     "(48-53 yrs)",
     "(60+ yrs)",
 ]
@@ -37,7 +37,7 @@ img_cp = image.copy()
 # Get image dimensions and blob
 img_h = img_cp.shape[0]
 img_w = img_cp.shape[1]
-blob = cv2.dnn.blobFromImage(img_cp, 1.0, (300, 300), MODEL_MEAN_VALUES, True, False)
+blob = cv2.dnn.blobFromImage(img_cp, 1.0, (300, 300), [104, 117, 123], True, False)
 
 face.setInput(blob)
 detected_faces = face.forward()
@@ -48,7 +48,7 @@ face_bounds = []
 
 for i in range(detected_faces.shape[2]):
     confidence = detected_faces[0, 0, i, 2]
-    if confidence > 0.99:
+    if confidence > 0.88:
         x1 = int(detected_faces[0, 0, i, 3] * img_w)
         y1 = int(detected_faces[0, 0, i, 4] * img_h)
         x2 = int(detected_faces[0, 0, i, 5] * img_w)
@@ -68,7 +68,9 @@ for face_bound in face_bounds:
             max(0, face_bound[1] - 15) : min(face_bound[3] + 15, img_cp.shape[0] - 1),
             max(0, face_bound[0] - 15) : min(face_bound[2] + 15, img_cp.shape[1] - 1),
         ]
-        blob = cv2.dnn.blobFromImage(face, 1.0, (227, 227), MODEL_MEAN_VALUES, True)
+        blob = cv2.dnn.blobFromImage(
+            face, 1.0, (227, 227), MODEL_MEAN_VALUES, swapRB=False
+        )
 
         gender.setInput(blob)
         gender_prediction = gender.forward()
@@ -81,9 +83,9 @@ for face_bound in face_bounds:
         cv2.putText(
             img_cp,
             f"{gender_str} {age_str}",
-            (face_bound[0], face_bound[1] - 15),
+            (face_bound[0], face_bound[1] - 12),
             cv2.FONT_HERSHEY_SIMPLEX,
-            1,
+            0.8,
             (0, 0, 255),
             2,
             cv2.LINE_AA,
